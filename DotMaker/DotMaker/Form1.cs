@@ -22,6 +22,7 @@ namespace DotMaker
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            
             // ビデオキャプチャデバイスを選択するダイアログの生成
             var form = new VideoCaptureDeviceForm();
             // 選択ダイアログを開く
@@ -32,6 +33,10 @@ namespace DotMaker
                 // ビデオキャプチャのスタート
                 videoSourcePlayer1.Start();
             }
+            
+
+
+            //videoSourcePlayer1.VideoSource = new AForge.Controls.VideoSourcePlayer();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -59,47 +64,88 @@ namespace DotMaker
             Bitmap bmp;
             
             // BitmapをpictureBoxから取得
-            bmp = new Bitmap("a.bmp");
+            bmp = new Bitmap("S__5980164.jpg");
 
             pic1Img = new Bitmap(bmp.Width, bmp.Height);
-             // Bitmap処理の高速化開始
-             BitmapPlus bmpP = new BitmapPlus(bmp);
+
+            int dotSize = 64;
+            Bitmap bmpDot = new Bitmap(dotSize, dotSize);
+
+            double margin = 0.2;
+            int imageWidth = (int)(bmp.Width * (1- margin*2));
+            int interval = imageWidth / dotSize;
+
+            Rectangle rect = new Rectangle((int)(bmp.Width* margin), (int)(bmp.Width * margin), imageWidth, imageWidth);
+            Bitmap bmpNew = bmp.Clone(rect, bmp.PixelFormat);
+
+
+            // Bitmap処理の高速化開始
+            BitmapPlus bmpP = new BitmapPlus(bmpNew);
             bmpP.BeginAccess();
-            for (int y = 170; y < 580; y+=26)
+            int dotXIndex = 0;
+            int dotYIndex = 0;
+
+            for (int y = 0; y < imageWidth; y+= interval)
             {
-                for (int x = 930; x < 1340; x+=26)
+                Console.WriteLine(dotXIndex);
+                dotXIndex = 0;
+                for (int x = 0; x < imageWidth; x+= interval)
                 {
-
+                    if (dotXIndex >= dotSize || dotYIndex >= dotSize) 
+                        break;
                     int r = 0, g = 0, b = 0;
-
-                    for(int y2 = y; y2 < y+26; y2++)
+                    
+                    for(int y2 = y; (y2 < y + interval && y2 < imageWidth); y2++)
                     {
-                        for (int x2 = x; x2 < x + 26; x2++)
+                        for (int x2 = x; (x2 < x + interval && x2 < imageWidth); x2++)
                         {
-                            
+
                             Color col = bmpP.GetPixel(x2, y2);
                             r += col.R;
                             g += col.G;
                             b += col.B;
+                            break;
                             
                         }
+                        break;
                     }
+                    
+                    /*
+                    r /= (interval * interval);
+                    g /= (interval * interval);
+                    b /= (interval * interval);
+                    */
 
-                    r /= (26 * 26);
-                    g /= (26 * 26);
-                    b /= (26 * 26);
+                    r = Math.Min(255, r);
+                    g = Math.Min(255, g);
+                    b = Math.Min(255, b);
+
+                    
+                    r = (r < 128) ? 0 : 255;
+                    g = (g < 128) ? 0 : 255;
+                    b = (b < 128) ? 0 : 255;
+                    
+
                     for (int y2 = y; y2 < (y + 26); y2++)
                     {
                         for (int x2 = x; x2 < (x + 26); x2++)
                         {
-                            pic1Img.SetPixel(x2, y2, Color.FromArgb(255, r, g, b));
+                           //pic1Img.SetPixel(x2, y2, Color.FromArgb(255, r, g, b));
                         }
+                    }
+
+                    if(dotXIndex % 2 == 0 && dotYIndex % 2 == 0)
+                    bmpDot.SetPixel(dotXIndex, dotYIndex, Color.FromArgb(255, r, g, b));
+
+                    if(dotXIndex >= 64)
+                    {
+                        Console.WriteLine("a");
                     }
 
                     // Bitmapの色取得
                     //Color bmpCol = bmp.GetPixel(i, j);
                     //Color bmpCol = bmpP.GetPixel(x, y);
-                    
+
                     //pic1Img.SetPixel(x, y, bmpCol);
 
                     //bmpP.SetPixel(x, y, Color.FromArgb(0, 0, 0, 0));
@@ -118,15 +164,21 @@ namespace DotMaker
                         bmpP.SetPixel(x, y, Color.FromArgb(255, 0, 0, 0));
                     }
                     */
+                    dotXIndex++;
                 }
+                dotYIndex++;
             }
             // Bitmap処理の高速化終了
             bmpP.EndAccess();
-            
+
+            bmpNew.Save("test.bmp");
+
             bmp.Dispose();
 
+            bmpDot.Save("dot.bmp");
 
-            pictureBox1.Image = pic1Img;
+
+            pictureBox1.Image = Image.FromFile("dot.bmp");
             pic1Img.Save("b.bmp");
             //bmp.Dispose();
 

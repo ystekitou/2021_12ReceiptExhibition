@@ -2,8 +2,9 @@ import java.util.ArrayList; //<>//
 import java.util.Collections;
 PImage img, img2, img3;
 
-float [] r = new float[16*16];
-float [] rN = new float[16*16];
+int dotSize = 16;
+float [] r = new float[dotSize*dotSize];
+float [] rN = new float[dotSize*dotSize];
 Dot d1, d2;
 int stage = 0;
 
@@ -11,30 +12,30 @@ PImage[] imgs = new PImage[3];
 
 void setup() {
   size(1280, 720);
-  img = loadImage("food_cake.gif");
-  img2 = loadImage("dot2.png");
+  //img = loadImage("64Average.bmp");
+  img = loadImage("classicguitar128.gif");
+  img2 = loadImage("shakuhachi128.gif");
   img3 = loadImage("korokke.gif");
-  imgs = new PImage[]{img, img2, img3};
+  imgs = new PImage[]{img, img2};
   d1 = new Dot(img, img2);
   //  d2 = new Dot(img2);
 }
 
 void draw() {
   background(255);
-
+  scale(0.2);
   d1.paint();
-  if(d1.isMoveComp){
-    
-    d1 = new Dot(d1.img2, imgs[(int)random(0,3)]);
+  if (d1.isMoveComp) {
+
+    d1 = new Dot(d1.img2, imgs[(int)random(0, imgs.length)]);
   }
-  
 }
 
 class Dot {
   PImage img, img2;
   float x, y;
-  Pix [] pix = new Pix[16*16];
-  Pix [] pix2 = new Pix[16*16];
+  Pix [] pix = new Pix[dotSize*dotSize];
+  Pix [] pix2 = new Pix[dotSize*dotSize];
 
   ArrayList<Pix> pixTmp = new ArrayList<Pix>();
   ArrayList<Pix> pix2Tmp = new ArrayList<Pix>();
@@ -67,7 +68,7 @@ class Dot {
     isMoveComp = true;
     for (Pix p : pix) {
       p.paint();
-      if(p.mode != 2){
+      if (p.mode != 2) {
         isMoveComp = false;
       }
     }
@@ -92,7 +93,7 @@ class Pix {
   Pix(int x, int y, color cc) {
     this.baseX= x * 32;
     this.baseY = y * 32;
-    r = 32;
+    r = dotSize;
     c = cc;
     //fill(red(c),green(c),blue(c),alpha(c));
     //ellipse(baseX, baseY, 32,32);
@@ -155,9 +156,9 @@ class Pix {
       color cc = lerpColor(c, c2, lerpCount);
       fill(red(cc), green(cc), blue(cc), alpha(cc));
       rect(x, y, r, r);
-      //x += vx;
-      //y += vy;
-      //vy += 0.5;
+      x += vx;
+      y += vy;
+      vy += 0.5;
     }
 
 
@@ -168,6 +169,6 @@ class Pix {
   }
 }
 
-void mousePressed(){
-  saveFrame("image.png");  
+void mousePressed() {
+  saveFrame("image.png");
 }
