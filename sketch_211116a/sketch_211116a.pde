@@ -2,7 +2,7 @@ import java.util.ArrayList; //<>//
 import java.util.Collections;
 PImage img, img2, img3;
 
-int dotSize = 16;
+int dotSize = 28;
 float [] r = new float[dotSize*dotSize];
 float [] rN = new float[dotSize*dotSize];
 Dot d1, d2;
@@ -10,11 +10,23 @@ int stage = 0;
 
 PImage[] imgs = new PImage[3];
 
+void setup_2(){
+  size(64,64);
+  PImage p = loadImage("zombi_01.jpg");
+  p.resize(64,64);
+  image(p,0,0);
+  saveFrame("64Conv.png");
+  
+}
+
 void setup() {
-  size(1280, 720);
+  
+  //size(1280, 720);
+  fullScreen();
+  frameRate(30);
   //img = loadImage("64Average.bmp");
-  img = loadImage("classicguitar128.gif");
-  img2 = loadImage("shakuhachi128.gif");
+  img = loadImage("zombi64.png");
+  img2 = loadImage("dot.bmp");
   img3 = loadImage("korokke.gif");
   imgs = new PImage[]{img, img2};
   d1 = new Dot(img, img2);
@@ -23,7 +35,7 @@ void setup() {
 
 void draw() {
   background(255);
-  scale(0.2);
+  scale(0.4);
   d1.paint();
   if (d1.isMoveComp) {
 
@@ -116,7 +128,6 @@ class Pix {
       noStroke();
       color cc = lerpColor(c, c2, lerpCount += 0.01);
       fill(red(cc), green(cc), blue(cc), alpha(cc));
-      //fill(0);
       rect(x, y, r, r);
       x += vx;
       y += vy;
@@ -139,7 +150,7 @@ class Pix {
         vx = random(-3, 3);
         vy = -1;
         mode = 2;
-      }
+      }      
     } else if (mode==0) {
       noStroke();
       color cc = lerpColor(c, c2, lerpCount);
@@ -148,9 +159,10 @@ class Pix {
       //x = baseX + noise(xN) * 10;
       //y = baseY + noise(yN) * 10;
       //r = noise(rN) * 32;
+      ////r = random(32);
       //xN += 0.01;
       //yN += 0.01;
-      //rN += 0.01;
+      //rN += random(0.01,0.1);
     } else if (mode == 2) {
       noStroke();
       color cc = lerpColor(c, c2, lerpCount);

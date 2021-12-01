@@ -55,7 +55,7 @@ namespace DotMaker
             pictureBox1.Image = null;
             // 現在のフレームをビットマップに保存
             var bmp = videoSourcePlayer1.GetCurrentVideoFrame();
-            bmp.Save("a.bmp");
+            bmp.Save("a.png");
         }
         Bitmap pic1Img;
         private void button2_Click(object sender, EventArgs e)
@@ -64,7 +64,7 @@ namespace DotMaker
             Bitmap bmp;
             
             // BitmapをpictureBoxから取得
-            bmp = new Bitmap("S__5980164.jpg");
+            bmp = new Bitmap("a.png");
 
             pic1Img = new Bitmap(bmp.Width, bmp.Height);
 
@@ -72,13 +72,14 @@ namespace DotMaker
             Bitmap bmpDot = new Bitmap(dotSize, dotSize);
 
             double margin = 0.2;
-            int imageWidth = (int)(bmp.Width * (1- margin*2));
+            int imageWidth = (int)(bmp.Height * (1- margin*2));
             int interval = imageWidth / dotSize;
 
             Rectangle rect = new Rectangle((int)(bmp.Width* margin), (int)(bmp.Width * margin), imageWidth, imageWidth);
+            //Rectangle rect = new Rectangle((int)(bmp.Width * margin), (int)(bmp.Width * margin), 400, 400);
             Bitmap bmpNew = bmp.Clone(rect, bmp.PixelFormat);
 
-
+            bmp.Dispose();
             // Bitmap処理の高速化開始
             BitmapPlus bmpP = new BitmapPlus(bmpNew);
             bmpP.BeginAccess();
@@ -126,11 +127,11 @@ namespace DotMaker
                     b = (b < 128) ? 0 : 255;
                     
 
-                    for (int y2 = y; y2 < (y + 26); y2++)
+                    for (int y2 = y; y2 < (y + interval); y2++)
                     {
-                        for (int x2 = x; x2 < (x + 26); x2++)
+                        for (int x2 = x; x2 < (x + interval); x2++)
                         {
-                           //pic1Img.SetPixel(x2, y2, Color.FromArgb(255, r, g, b));
+                           pic1Img.SetPixel(x2, y2, Color.FromArgb(255, r, g, b));
                         }
                     }
 
@@ -173,13 +174,14 @@ namespace DotMaker
 
             bmpNew.Save("test.bmp");
 
-            bmp.Dispose();
 
             bmpDot.Save("dot.bmp");
+            bmpDot.Dispose();
 
 
             pictureBox1.Image = Image.FromFile("dot.bmp");
             pic1Img.Save("b.bmp");
+            pic1Img.Dispose();
             //bmp.Dispose();
 
         }
